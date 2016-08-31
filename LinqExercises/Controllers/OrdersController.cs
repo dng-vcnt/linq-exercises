@@ -19,7 +19,11 @@ namespace LinqExercises.Controllers
         [HttpGet, Route("api/orders/between/{startDate}/{endDate}"), ResponseType(typeof(IQueryable<Order>))]
         public IHttpActionResult GetOrdersBetween(DateTime startDate, DateTime endDate)
         {
-            throw new NotImplementedException("Write a query to return all orders with required dates between Jan 1, 1997 and Dec 31, 1997 with freight under 100 units.");
+            // throw new NotImplementedException("Write a query to return all orders with required dates between Jan 1, 1997 and Dec 31, 1997 and freights under 100 units.");
+            var resultSet = _db.Orders.Where(o => o.RequiredDate >= startDate &&
+                                                  o.RequiredDate <= endDate &&
+                                                  o.Freight < 100);
+            return Ok(resultSet);
         }
 
         //GET: api/orders/reports/purchase
@@ -27,7 +31,16 @@ namespace LinqExercises.Controllers
         public IHttpActionResult PurchaseReport()
         {
             // See this blog post for more information about projecting to anonymous objects. https://blogs.msdn.microsoft.com/swiss_dpe_team/2008/01/25/using-your-own-defined-type-in-a-linq-query-expression/
-            throw new NotImplementedException("Write a query to return an array of anonymous objects that have two properties. A Product property and the quantity ordered for that product labelled as 'QuantityPurchased' ordered by QuantityPurchased in descending order.");
+            // throw new NotImplementedException("Write a query to return an array of anonymous objects that have two properties. A Product property and the quantity ordered for that product labelled as 'QuantityPurchased' ordered by QuantityPurchased in descending order.");
+            var resultSet = from p in _db.Products
+                            orderby p.UnitsOnOrder descending
+                            select new
+                            {
+                                ProductName = p.ProductName,
+                                QuantityPurchased = p.UnitsOnOrder
+                            };
+            return Ok(resultSet);
+                            
         }
 
         protected override void Dispose(bool disposing)
